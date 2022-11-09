@@ -23,22 +23,22 @@ data = pd.read_csv("my_jobs.csv")
 st.title("给点活路吧！排不下去了")
 form = st.form(key="annotation")
 with form:
-    task = st.text_input("工作名称:")
+    task = st.text_input("工作名称:","今天的工作{}".format(len(data)+1))
     start_time = st.date_input(
         "开始时间",
         datetime.date.today())
     end_time = st.date_input(
         "结束时间",
-        datetime.date.today())
-    comment = st.text_area("备注:")
-    commander = st.text_area("需求方:")
-    submitted = st.form_submit_button(label="添加需求")
+        datetime.date.today() + datetime.timedelta(days=1))
+    comment = st.text_area("备注:","长得帅就可以猥琐欲为")
+    commander = st.text_area("需求方:","小丑竟是我自己")
+    submitted = st.form_submit_button(label="不要随便添加需求")
 
 if submitted:
     data.loc[len(data)] = {"我的项目": task, "开始时间": start_time, "结束时间": end_time, "备注": comment,"需求方":commander}
     df = data.copy()
     df.to_csv("my_jobs.csv", index=False)
-    st.success("加钱！加钱！加钱！")
+    st.success("加钱！加钱！加钱！",icon="✅")
     st.balloons()
 
 if not data.empty:
@@ -50,17 +50,30 @@ if not data.empty:
 
     st.altair_chart(c, use_container_width=True)
 
-expander = st.expander("点击查看丽鹏无趣的一生时光")
+expander = st.expander("-->点击查看丽鹏无趣的一生时光<--")
 with expander:
     st.table(pd.read_csv("my_jobs.csv"))
 
+    if not data.empty:
+        form2 = st.form(key="delete")
+        with form2:
+            number = st.number_input('请输入需要删除的需求序号',min_value=0,max_value=len(data)-1,value=len(data)-1,step=1)
+            button = st.form_submit_button("点击不要随便删除")
+        if button:
+            st.info("再删被你玩死了！")
+            df = data.drop(labels=number)
+            df.to_csv("my_jobs.csv",index=False)
+            st.experimental_rerun()
 
-if not data.empty:
-    form2 = st.form(key="delete")
-    with form2:
-        number = st.number_input('请输入需要删除的需求序号',min_value=0,max_value=len(data)-1,value=len(data)-1,step=1)
-        button = st.form_submit_button("点击删除")
-    if button:
-        df = data.drop(labels=number)
-        df.to_csv("my_jobs.csv",index=False)
-        st.experimental_rerun()
+from streamlit_webrtc import webrtc_streamer
+import av
+
+def video_frame_callback(frame):
+    img = frame.to_ndarray(format="bgr24")
+
+    # flipped = img[::-1,:,:]
+    flipped = img[:,:,:]
+
+    return av.VideoFrame.from_ndarray(flipped, format="bgr24")
+
+webrtc_streamer(key="example", video_frame_callback=video_frame_callback,translations={"start":"看一下小丑是谁？","select_device":"选择丽鹏氪金狗眼模式","stop":"关闭社死现场"})
