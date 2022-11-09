@@ -76,4 +76,4 @@ def video_frame_callback(frame):
 
     return av.VideoFrame.from_ndarray(flipped, format="bgr24")
 
-webrtc_streamer(key="example", video_frame_callback=video_frame_callback,translations={"start":"看一下小丑是谁？","select_device":"选择丽鹏氪金狗眼模式","stop":"关闭社死现场"})
+webrtc_streamer(key="example", video_frame_callback=video_frame_callback,translations={"start":"看一下小丑是谁？","select_device":"选择丽鹏氪金狗眼模式","stop":"关闭社死现场","done":"看不下去了，赶紧滚！"})
